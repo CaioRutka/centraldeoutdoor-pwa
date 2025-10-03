@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
+import { loadGoogleMapsAPI } from '../utils/googleMaps';
 
 interface Venue {
   _id: string;
@@ -56,56 +57,64 @@ export default function Venue() {
     }
   };
 
-  const initializeMap = () => {
+  const initializeMap = async () => {
     if (!venue?.coordinates || !mapRef.current) return;
 
-    const mapOptions: google.maps.MapOptions = {
-      center: {
-        lat: venue.coordinates.latitude,
-        lng: venue.coordinates.longitude
-      },
-      zoom: 15,
-      mapTypeId: google.maps.MapTypeId.ROADMAP,
-      disableDefaultUI: false,
-      zoomControl: true,
-      mapTypeControl: true,
-      scaleControl: true,
-      streetViewControl: true,
-      rotateControl: true,
-      fullscreenControl: true
-    };
+    try {
+      // Carrega a Google Maps API dinamicamente
+      await loadGoogleMapsAPI();
 
-    const map = new google.maps.Map(mapRef.current, mapOptions);
-    mapInstanceRef.current = map;
+      const mapOptions: google.maps.MapOptions = {
+        center: {
+          lat: venue.coordinates.latitude,
+          lng: venue.coordinates.longitude
+        },
+        zoom: 15,
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        disableDefaultUI: false,
+        zoomControl: true,
+        mapTypeControl: true,
+        scaleControl: true,
+        streetViewControl: true,
+        rotateControl: true,
+        fullscreenControl: true
+      };
 
-    // Adicionar marcador
-    const marker = new google.maps.Marker({
-      position: {
-        lat: venue.coordinates.latitude,
-        lng: venue.coordinates.longitude
-      },
-      map: map,
-      title: venue.name,
-      animation: google.maps.Animation.DROP
-    });
+      const map = new google.maps.Map(mapRef.current, mapOptions);
+      mapInstanceRef.current = map;
 
-    // Adicionar info window
-    const infoWindow = new google.maps.InfoWindow({
-      content: `
-        <div style="padding: 10px;">
-          <h3 style="margin: 0 0 5px 0; color: #333;">${venue.name}</h3>
-          <p style="margin: 0; color: #666;">${venue.shortAddress}</p>
-          <p style="margin: 5px 0 0 0; color: #666;">${venue.neighborhood}, ${venue.city}</p>
-        </div>
-      `
-    });
+      // Adicionar marcador
+      const marker = new google.maps.Marker({
+        position: {
+          lat: venue.coordinates.latitude,
+          lng: venue.coordinates.longitude
+        },
+        map: map,
+        title: venue.name,
+        animation: google.maps.Animation.DROP
+      });
 
-    marker.addListener('click', () => {
+      // Adicionar info window
+      const infoWindow = new google.maps.InfoWindow({
+        content: `
+          <div style="padding: 10px;">
+            <h3 style="margin: 0 0 5px 0; color: #333;">${venue.name}</h3>
+            <p style="margin: 0; color: #666;">${venue.shortAddress}</p>
+            <p style="margin: 5px 0 0 0; color: #666;">${venue.neighborhood}, ${venue.city}</p>
+          </div>
+        `
+      });
+
+      marker.addListener('click', () => {
+        infoWindow.open(map, marker);
+      });
+
+      // Abrir info window automaticamente
       infoWindow.open(map, marker);
-    });
-
-    // Abrir info window automaticamente
-    infoWindow.open(map, marker);
+    } catch (error) {
+      console.error('Erro ao carregar Google Maps:', error);
+      // Fallback: mostrar mensagem de erro ou botão para abrir no Google Maps
+    }
   };
 
   const handleGoBack = () => {
