@@ -2335,4 +2335,79 @@ label{display:block;font-size:14px;font-weight:600;margin-bottom:6px}
   background-color: #f0f0f0;
 }
 
+/* Venue Map Styles */
+.venue-map-container {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.venue-map {
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+}
+
+.venue-map-overlay-button {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  background: rgba(0, 76, 132, 0.9);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  backdrop-filter: blur(10px);
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.venue-map-overlay-button:hover {
+  background: rgba(0, 76, 132, 1);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.venue-map-overlay-text {
+  font-size: 12px;
+}
+
+.venue-map-overlay-icon {
+  font-size: 16px;
+}
+
+/* Responsive adjustments for map */
+@media (max-width: 768px) {
+  .venue-map-container {
+    height: 250px;
+    margin: 0 -20px 20px -20px;
+    border-radius: 0;
+  }
+  
+  .venue-map {
+    border-radius: 0;
+  }
+  
+  .venue-map-overlay-button {
+    bottom: 8px;
+    right: 8px;
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+  
+  .venue-map-overlay-text {
+    font-size: 11px;
+  }
+}
+
 

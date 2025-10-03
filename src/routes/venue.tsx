@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 
@@ -26,11 +26,19 @@ export default function Venue() {
   const [venue, setVenue] = useState<Venue | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const mapRef = useRef<HTMLDivElement>(null);
+  const mapInstanceRef = useRef<google.maps.Map | null>(null);
 
   useEffect(() => {
     if (!eventId) return;
     loadVenueData();
   }, [eventId]);
+
+  useEffect(() => {
+    if (venue?.coordinates && mapRef.current) {
+      initializeMap();
+    }
+  }, [venue]);
 
   const loadVenueData = async () => {
     if (!eventId) return;
@@ -48,11 +56,69 @@ export default function Venue() {
     }
   };
 
+  const initializeMap = () => {
+    if (!venue?.coordinates || !mapRef.current) return;
+
+    const mapOptions: google.maps.MapOptions = {
+      center: {
+        lat: venue.coordinates.latitude,
+        lng: venue.coordinates.longitude
+      },
+      zoom: 15,
+      mapTypeId: google.maps.MapTypeId.ROADMAP,
+      disableDefaultUI: false,
+      zoomControl: true,
+      mapTypeControl: true,
+      scaleControl: true,
+      streetViewControl: true,
+      rotateControl: true,
+      fullscreenControl: true
+    };
+
+    const map = new google.maps.Map(mapRef.current, mapOptions);
+    mapInstanceRef.current = map;
+
+    // Adicionar marcador
+    const marker = new google.maps.Marker({
+      position: {
+        lat: venue.coordinates.latitude,
+        lng: venue.coordinates.longitude
+      },
+      map: map,
+      title: venue.name,
+      animation: google.maps.Animation.DROP
+    });
+
+    // Adicionar info window
+    const infoWindow = new google.maps.InfoWindow({
+      content: `
+        <div style="padding: 10px;">
+          <h3 style="margin: 0 0 5px 0; color: #333;">${venue.name}</h3>
+          <p style="margin: 0; color: #666;">${venue.shortAddress}</p>
+          <p style="margin: 5px 0 0 0; color: #666;">${venue.neighborhood}, ${venue.city}</p>
+        </div>
+      `
+    });
+
+    marker.addListener('click', () => {
+      infoWindow.open(map, marker);
+    });
+
+    // Abrir info window automaticamente
+    infoWindow.open(map, marker);
+  };
+
   const handleGoBack = () => {
     navigate(-1);
   };
 
   const handleOpenMaps = () => {
+    if (!venue?.coordinates) return;
+    const url = `https://maps.google.com/maps?q=${venue.coordinates.latitude},${venue.coordinates.longitude}`;
+    window.open(url, '_blank');
+  };
+
+  const handleOpenInGoogleMaps = () => {
     if (!venue?.coordinates) return;
     const url = `https://maps.google.com/maps?q=${venue.coordinates.latitude},${venue.coordinates.longitude}`;
     window.open(url, '_blank');
@@ -114,15 +180,15 @@ export default function Venue() {
       <div className="venue-scroll-container">
         {/* Mapa */}
         <div className="venue-map-container">
-          <div className="venue-map-placeholder">
-            <div className="venue-map-placeholder-text">
-              Mapa indisponível. Toque para abrir no Google Maps.
-            </div>
-          </div>
-
+          <div 
+            ref={mapRef}
+            className="venue-map"
+            style={{ width: '100%', height: '300px' }}
+          />
+          
           <button 
-            className="venue-map-overlay"
-            onClick={handleOpenMaps}
+            className="venue-map-overlay-button"
+            onClick={handleOpenInGoogleMaps}
           >
             <div className="venue-map-overlay-text">Abrir no Google Maps</div>
             <div className="venue-map-overlay-icon">🗺️</div>
@@ -166,7 +232,7 @@ export default function Venue() {
               <div className="venue-action-text">Website</div>
             </button>
             
-            <button className="venue-action-button" onClick={handleOpenMaps}>
+            <button className="venue-action-button" onClick={handleOpenInGoogleMaps}>
               <div className="venue-action-icon">🧭</div>
               <div className="venue-action-text">Direções</div>
             </button>
