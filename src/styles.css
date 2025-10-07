@@ -2187,6 +2187,7 @@ label{display:block;font-size:14px;font-weight:600;margin-bottom:6px}
   border-radius: 40px;
   border: 2px solid rgba(0, 76, 132, 0.2);
   object-fit: cover;
+  object-position: center top;
 }
 
 .speakers-photo-text {

@@ -179,10 +179,10 @@ export default function Sponsors() {
 
             return (
               <>
-                {masterSponsors.length > 0 && renderSponsorSection('MASTER', masterSponsors, '👑')}
-                {goldSponsors.length > 0 && renderSponsorSection('GOLD', goldSponsors, '🥇')}
-                {silverSponsors.length > 0 && renderSponsorSection('SILVER', silverSponsors, '🥈')}
-                {supportSponsors.length > 0 && renderSponsorSection('APOIO', supportSponsors, '🤝')}
+                {masterSponsors.length > 0 && renderSponsorSection('MASTER', masterSponsors, '')}
+                {goldSponsors.length > 0 && renderSponsorSection('GOLD', goldSponsors, '')}
+                {silverSponsors.length > 0 && renderSponsorSection('SILVER', silverSponsors, '')}
+                {supportSponsors.length > 0 && renderSponsorSection('APOIO', supportSponsors, '')}
               </>
             );
           })()}

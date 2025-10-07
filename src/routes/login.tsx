@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -18,6 +18,13 @@ export default function Login() {
     resolver: zodResolver(schema),
     mode: 'onChange'
   });
+
+  // Redireciona automaticamente se já estiver autenticado
+  useEffect(() => {
+    if (isAuthenticated && !isLoading) {
+      navigate('/home', { replace: true });
+    }
+  }, [isAuthenticated, isLoading, navigate]);
 
   const onSubmit = async (data: FormData) => {
     try {

@@ -10,7 +10,7 @@ class CentralDeOutdoorAPI {
   private token: string | null = null;
   private currentUserEmail: string | null = null;
 
-  constructor(baseURL: string = import.meta.env.VITE_API_URL || 'https://app.centraldeoutdoor.org.br/api') {
+  constructor(baseURL: string = import.meta.env.VITE_API_URL || 'http://localhost:3000/api') {
     this.client = axios.create({
       baseURL,
       timeout: 10000,
